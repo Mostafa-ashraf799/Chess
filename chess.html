@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Master - Play & Learn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #e94560;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        nav {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            background: #e94560;
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .chess-board {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .board {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            border: 4px solid #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .square {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .square:hover {
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        
+        .white {
+            background-color: #f0d9b5;
+        }
+        
+        .black {
+            background-color: #b58863;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #ff577f;
+            transform: translateY(-2px);
+        }
+        
+        .game-info {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            color: #e94560;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e94560;
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: #4cc9f0;
+            margin: 15px 0 10px;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .rules {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .rule-section {
+            margin-bottom: 25px;
+        }
+        
+        .pieces {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .piece {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .piece-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            nav a {
+                margin: 5px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Chess Master</h1>
+        <p>Play and learn the game of kings</p>
+    </header>
+    
+    <nav>
+        <a href="#play">Play Chess</a>
+        <a href="#rules">Game Rules</a>
+        <a href="#pieces">Chess Pieces</a>
+        <a href="#about">About</a>
+    </nav>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="chess-board" id="play">
+                <h2>Play Chess</h2>
+                <div class="board">
+                    <!-- Chess board will be generated by JavaScript -->
+                </div>
+                <div class="controls">
+                    <button id="newGame">New Game</button>
+                    <button id="undoMove">Undo Move</button>
+                    <button id="hint">Hint</button>
+                </div>
+            </div>
+            
+            <div class="game-info">
+                <h2>Game Information</h2>
+                <div id="status">White's turn to play</div>
+                <div id="moves"></div>
+                
+                <h3>How to Play</h3>
+                <p>Click on a piece to select it, then click on a destination square to move. The game follows standard chess rules.</p>
+                
+                <h3>Tips for Beginners</h3>
+                <p>1. Control the center of the board</p>
+                <p>2. Develop your pieces early</p>
+                <p>3. Protect your king by castling</p>
+                <p>4. Don't bring your queen out too early</p>
+                <p>5. Connect your rooks by moving pieces in between</p>
+            </div>
+        </div>
+        
+        <div class="rules" id="rules">
+            <h2>Chess Rules</h2>
+            
+            <div class="rule-section">
+                <h3>Basic Rules</h3>
+                <p>Chess is a two-player strategy game played on an 8x8 board. Each player starts with 16 pieces: one king, one queen, two rooks, two bishops, two knights, and eight pawns.</p>
+                <p>The goal of the game is to checkmate your opponent's king. This means the king is in a position to be captured (in check) and there is no legal move to escape.</p>
+            </div>
+            
+            <div class="rule-section">
+                <h3>Special Moves</h3>
+                <p><strong>Castling:</strong> A move that involves the king and one rook. It's the only move where two pieces move at the same time.</p>
+                <p><strong>En Passant:</strong> A special pawn capture that can occur when a pawn moves two squares from its starting position.</p>
+                <p><strong>Promotion:</strong> When a pawn reaches the opposite end of the board, it can be promoted to any other piece (usually a queen).</p>
+            </div>
+        </div>
+        
+        <div class="rules" id="pieces">
+            <h2>Chess Pieces</h2>
+            
+            <div class="pieces">
+                <div class="piece">
+                    <div class="piece-icon">♔</div>
+                    <h3>King</h3>
+                    <p>Moves one square in any direction. The most important piece.</p>
+                </div>
+                
+                <div class="piece">
+                    <div class="piece-icon">♕</div>
+                    <h3>Queen</h3>
+                    <p>Moves any number of squares diagonally, horizontally, or vertically.</p>
+                </div>
+                
+                <div class="piece">
+                    <div class="piece-icon">♖</div>
+                    <h3>Rook</h3>
+                    <p>Moves any number of squares horizontally or vertically.</p>
+                </div>
+                
+                <div class="piece">
+                    <div class="piece-icon">♗</div>
+                    <h3>Bishop</h3>
+                    <p>Moves any number of squares diagonally.</p>
+                </div>
+                
+                <div class="piece">
+                    <div class="piece-icon">♘</div>
+                    <h3>Knight</h3>
+                    <p>Moves in an L-shape: two squares in one direction and one square perpendicular.</p>
+                </div>
+                
+                <div class="piece">
+                    <div class="piece-icon">♙</div>
+                    <h3>Pawn</h3>
+                    <p>Moves forward one square, but captures diagonally. On its first move, it can move two squares.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Chess Master - Created for chess enthusiasts | 2023</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const board = document.querySelector('.board');
+            const status = document.getElementById('status');
+            const movesList = document.getElementById('moves');
+            
+            // Create chess board
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square');
+                    square.classList.add((row + col) % 2 === 0 ? 'white' : 'black');
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    // Add initial pieces
+                    if (row === 0 || row === 7) {
+                        // Back row pieces
+                        const pieces = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+                        const color = row === 0 ? 'black' : 'white';
+                        square.textContent = getPieceSymbol(pieces[col], color);
+                        square.dataset.piece = pieces[col];
+                        square.dataset.color = color;
+                    } else if (row === 1 || row === 6) {
+                        // Pawns
+                        const color = row === 1 ? 'black' : 'white';
+                        square.textContent = getPieceSymbol('pawn', color);
+                        square.dataset.piece = 'pawn';
+                        square.dataset.color = color;
+                    }
+                    
+                    board.appendChild(square);
+                }
+            }
+            
+            // Add event listeners to buttons
+            document.getElementById('newGame').addEventListener('click', resetGame);
+            document.getElementById('undoMove').addEventListener('click', undoMove);
+            document.getElementById('hint').addEventListener('click', showHint);
+            
+            // Add click event to squares
+            const squares = document.querySelectorAll('.square');
+            squares.forEach(square => {
+                square.addEventListener('click', handleSquareClick);
+            });
+            
+            let selectedPiece = null;
+            
+            function handleSquareClick(e) {
+                const square = e.target;
+                const hasPiece = square.dataset.piece;
+                
+                if (selectedPiece) {
+                    // Try to move the selected piece to this square
+                    movePiece(selectedPiece, square);
+                    selectedPiece = null;
+                } else if (hasPiece) {
+                    // Select this piece
+                    selectedPiece = square;
+                    square.style.backgroundColor = '#a0e0a0';
+                }
+            }
+            
+            function movePiece(fromSquare, toSquare) {
+                // Simple move logic for demonstration
+                if (fromSquare !== toSquare) {
+                    toSquare.textContent = fromSquare.textContent;
+                    toSquare.dataset.piece = fromSquare.dataset.piece;
+                    toSquare.dataset.color = fromSquare.dataset.color;
+                    
+                    fromSquare.textContent = '';
+                    delete fromSquare.dataset.piece;
+                    delete fromSquare.dataset.color;
+                    
+                    // Add to moves list
+                    const moveText = `${fromSquare.dataset.color} moved ${fromSquare.dataset.piece}`;
+                    const moveItem = document.createElement('p');
+                    moveItem.textContent = moveText;
+                    movesList.appendChild(moveItem);
+                    
+                    // Update status
+                    status.textContent = `${toSquare.dataset.color === 'white' ? 'Black' : 'White'}'s turn to play`;
+                }
+                
+                // Reset background color
+                const squares = document.querySelectorAll('.square');
+                squares.forEach(sq => {
+                    sq.style.backgroundColor = '';
+                });
+            }
+            
+            function resetGame() {
+                // Reload the page for simplicity
+                window.location.reload();
+            }
+            
+            function undoMove() {
+                alert('Undo move feature would be implemented in a complete version.');
+            }
+            
+            function showHint() {
+                alert('Hint: Try to control the center of the board!');
+            }
+            
+            function getPieceSymbol(piece, color) {
+                const symbols = {
+                    king: color === 'white' ? '♔' : '♚',
+                    queen: color === 'white' ? '♕' : '♛',
+                    rook: color === 'white' ? '♖' : '♜',
+                    bishop: color === 'white' ? '♗' : '♝',
+                    knight: color === 'white' ? '♘' : '♞',
+                    pawn: color === 'white' ? '♙' : '♟'
+                };
+                
+                return symbols[piece];
+            }
+        });
+    </script>
+</body>
+</html>
